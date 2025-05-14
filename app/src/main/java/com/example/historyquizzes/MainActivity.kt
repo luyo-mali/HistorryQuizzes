@@ -17,18 +17,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.historyquizzes.ui.theme.HistoryQuizzesTheme
 
@@ -44,6 +42,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     @SuppressLint("ContextCastToActivity")
     @Composable
     fun HistoryQuizzesApp() {
@@ -56,9 +55,11 @@ class MainActivity : ComponentActivity() {
             "The American civil war ended in 1865"
         )
         val answers = listOf(true, false, true, true, true)
-        var currentIndex by remember { mutableStateOf(0) }
-        var score by remember { mutableStateOf(0) }
+        var currentIndex by remember { mutableIntStateOf(0) }
+        var score by remember { mutableIntStateOf(0) }
         val userAnswers = remember { mutableListOf<Boolean>() }
+        val activity = LocalContext.current as? Activity
+        activity?.finish()
 
         when (screen) {
             "welcome" -> WelcomeScreen { screen = "quiz" }
@@ -83,10 +84,8 @@ class MainActivity : ComponentActivity() {
                 score = score,
                 total = questions.size,
                 onReview = { screen = "review" },
-                onExit = {
-                    val activity = LocalContext.current as? Activity
-                    activity?.finish()}
-
+                onExit = { activity?.finish()
+                }
             )
 
             "review" -> ReviewScreen(
@@ -100,7 +99,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun WelcomeScreen(onStart: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -123,7 +124,9 @@ fun QuizScreen(
     var selected by remember { mutableStateOf<Boolean?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -162,11 +165,12 @@ fun QuizScreen(
 @Composable
 fun ScoreScreen(score: Int, total: Int, onReview: () -> Unit, onExit: () -> Unit) {
     val feedback = if (score >= 3) "Great job!" else "Keep practising!"
-    val context = LocalContext.current
-    val activity = context as? Activity
+
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -186,14 +190,16 @@ fun ScoreScreen(score: Int, total: Int, onReview: () -> Unit, onExit: () -> Unit
 
 @Composable
 fun ReviewScreen(questions: List<String>, answers: List<Boolean>, userAnswers: List<Boolean?>) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         Text("Review Answers", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
         questions.forEachIndexed { index, question ->
             val correct = answers[index]
             val user = userAnswers.getOrNull(index)
-            Text("$question")
+            Text(question)
             Text("Correct Answer: $correct | Your Answer: $user")
             Spacer(modifier = Modifier.height(12.dp))
         }
