@@ -17,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -28,25 +27,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.historyquizzes.ui.theme.HistoryQuizzesTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HistoryQuizzesTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
+            MaterialTheme {
+                Surface {
                     HistoryQuizzesApp()
                 }
             }
         }
     }
 
+
+    }
+
     @Suppress("NAME_SHADOWING")
     @SuppressLint("ContextCastToActivity")
     @Composable
     fun HistoryQuizzesApp() {
-        var screen by remember { mutableStateOf("Welcome") }
+        var screen by remember { mutableStateOf("welcome") }
         val questions = listOf(
             "The Berlin Wall fell in 1989",
             "Nelson Mandela was the president in 1994",
@@ -59,7 +61,7 @@ class MainActivity : ComponentActivity() {
         var score by remember { mutableIntStateOf(0) }
         val userAnswers = remember { mutableListOf<Boolean>() }
         val activity = LocalContext.current as? Activity
-        activity?.finish()
+
 
         when (screen) {
             "welcome" -> WelcomeScreen { screen = "quiz" }
@@ -95,7 +97,6 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-}
 @Composable
 fun WelcomeScreen(onStart: () -> Unit) {
     Column(
@@ -116,12 +117,13 @@ fun WelcomeScreen(onStart: () -> Unit) {
 }
 @Composable
 fun QuizScreen(
-    question: String,
-    onAnswer: (Boolean) -> Unit,
-    onNext: () -> Unit,
-    correctAnswer: Boolean
+             question: String,
+             onAnswer: (Boolean) -> Unit,
+             onNext: () -> Unit,
+             correctAnswer: Boolean
 ) {
-    var selected by remember { mutableStateOf<Boolean?>(null) }
+    // This ensures selected resets every time 'question' changes
+    var selected by remember(question) { mutableStateOf<Boolean?>(null) }
 
     Column(
         modifier = Modifier
